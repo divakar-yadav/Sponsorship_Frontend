@@ -119,7 +119,7 @@ export default function HomePage() {
       }))
     };
 
-    fetch(`${BASE_URL}/predict`, {
+    fetch(`${BASE_URL}/api/predict`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
