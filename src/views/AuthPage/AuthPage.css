@@ -1,0 +1,129 @@
+.auth-page-container {
+  height: 100vh;
+  background: linear-gradient(135deg, #e3f2fd, #fce4ec);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.auth-box {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.auth-box h2 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.auth-icon {
+  color: #1976d2;
+  margin-bottom: 0.5rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px 12px;  /* Equal left and right padding */
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.auth-password-wrapper input.auth-input {
+  padding-right: 40px; /* prevent text from going under the eye icon */
+}
+.auth-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+}
+
+.auth-input:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+.auth-password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.auth-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #555;
+}
+
+.auth-btn {
+  width: 100%;
+  background-color: #1976d2;
+  color: white;
+  font-weight: bold;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.auth-btn:hover {
+  background-color: #1565c0;
+}
+
+.auth-toggle-text {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.auth-toggle-text span {
+  color: #1976d2;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Tagline and tech info below auth box */
+.auth-footer-message {
+  position: absolute;
+  bottom: 60px;
+  text-align: center;
+  color: #444;
+  font-size: 0.9rem;
+  animation: floatUp 6s ease-in-out infinite;
+}
+
+.auth-tagline {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.3rem;
+}
+
+.auth-techstack {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+/* Smooth float animation */
+@keyframes floatUp {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
