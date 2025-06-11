@@ -98,12 +98,12 @@ const AuthPage = ({ setUser }) => {
         </p>
       </div>
 
-      <div className="auth-footer-message">
+      {/* <div className="auth-footer-message">
         <p className="auth-tagline">“Transforming sponsorship decisions into data-driven certainty.”</p>
         <p className="auth-techstack">
           ⚙️ Built on React, Flask & Azure — with just the right amount of machine learning 🧠
         </p>
-      </div>
+      </div> */}
     </div>
   );
 };
