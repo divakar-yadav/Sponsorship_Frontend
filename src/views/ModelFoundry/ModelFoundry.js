@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import './ModelFoundry.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Select from 'react-select';
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -13,84 +15,160 @@ const funMessages = [
   'Herding neural nets into formation...',
 ];
 
-const Dropdown = ({ label, items, selected, onSelect, displayKey }) => {
-  const [open, setOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const dropdownRef = useRef(null);
+// CustomDropdown: A custom dropdown with search, keyboard navigation, and single select
+function CustomDropdown({ label, items, selected, onSelect, displayKey }) {
+  const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = React.useState('');
+  const [highlighted, setHighlighted] = React.useState(0);
+  const ref = React.useRef();
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+  // Filter items by search
+  const filtered = items.filter(item => {
+    const labelText = typeof displayKey(item) === 'string'
+      ? displayKey(item)
+      : (displayKey(item).props?.children?.[0]?.props?.children || '').toLowerCase();
+    return labelText.toLowerCase().includes(search.toLowerCase());
+  });
+
+  // Handle outside click
+  React.useEffect(() => {
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    if (open) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
+
+  // Keyboard navigation
+  function handleKeyDown(e) {
+    if (!open) return;
+    if (e.key === 'ArrowDown') {
+      setHighlighted(h => Math.min(h + 1, filtered.length - 1));
+      e.preventDefault();
+    } else if (e.key === 'ArrowUp') {
+      setHighlighted(h => Math.max(h - 1, 0));
+      e.preventDefault();
+    } else if (e.key === 'Enter') {
+      if (filtered[highlighted]) {
+        onSelect(filtered[highlighted]);
         setOpen(false);
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+      e.preventDefault();
+    } else if (e.key === 'Escape') {
+      setOpen(false);
+      e.preventDefault();
+    }
+  }
 
-  const handleSelect = (item) => {
-    onSelect(item);
-    setOpen(false);
-    setSearchTerm('');
-  };
-
-  const filteredItems = items.filter((item) =>
-    (item.filename || item.model_blob_name || '')
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  // Find selected label
+  const selectedLabel = selected ? displayKey(selected) : 'Select...';
 
   return (
-    <div className="custom-dropdown" ref={dropdownRef}>
+    <div className="custom-dropdown" ref={ref} tabIndex={0} onKeyDown={handleKeyDown} style={{ position: 'relative' }}>
       <div className="dropdown-label">{label}</div>
-      <div className="dropdown-selected" onClick={() => setOpen(!open)}>
-        {selected ? displayKey(selected) : 'Select...'}
-        <span className="dropdown-arrow">&#9662;</span>
+      <div
+        className="dropdown-selected"
+        onClick={() => setOpen(o => !o)}
+        style={{
+          border: open ? '1.5px solid #4a90e2' : '1px solid #555',
+          background: 'linear-gradient(135deg, #404040 0%, #353535 100%)',
+          borderRadius: 8,
+          color: '#e0e0e0',
+          padding: '12px 16px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <span>{selectedLabel}</span>
+        <span style={{ marginLeft: 10, fontSize: 14, color: '#aaa' }}>{open ? '\u25B2' : '\u25BC'}</span>
       </div>
       {open && (
-        <div className="dropdown-menu">
+        <div
+          className="dropdown-menu"
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            width: '100%',
+            background: 'linear-gradient(135deg, #2d2d2d 0%, #252525 100%)',
+            border: '1.5px solid #4a90e2',
+            borderRadius: 8,
+            marginTop: 4,
+            zIndex: 3000,
+            boxShadow: '0 8px 25px rgba(0,0,0,0.3)',
+            overflow: 'hidden',
+            maxHeight: 240,
+            overflowY: 'auto',
+          }}
+        >
           <input
-            type="text"
             className="dropdown-search"
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              border: 'none',
+              borderBottom: '1px solid #555',
+              background: '#404040',
+              color: '#e0e0e0',
+              fontSize: 14,
+              outline: 'none',
+              borderRadius: '8px 8px 0 0',
+              boxSizing: 'border-box',
+            }}
+            autoFocus
+            value={search}
+            onChange={e => {
+              setSearch(e.target.value);
+              setHighlighted(0);
+            }}
             placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={e => e.stopPropagation()}
           />
-          {filteredItems.map((item) => {
-            const isCurrentModel = item.status === 'Current';
-            const isLatestDataset =
-              items.length > 0 &&
-              item.uploaded_at &&
-              item.uploaded_at ===
-                [...items]
-                  .filter((i) => i.uploaded_at)
-                  .sort((a, b) => new Date(b.uploaded_at) - new Date(a.uploaded_at))[0]
-                  .uploaded_at;
-
-            const highlightClass = isCurrentModel
-              ? 'highlight-current'
-              : isLatestDataset
-              ? 'highlight-latest'
-              : '';
-
-            return (
-              <div
-                key={item.id || item.model_id || item.dataset_id}
-                className={`dropdown-item ${highlightClass}`}
-                onClick={() => handleSelect(item)}
-              >
-                {displayKey(item)}
-              </div>
-            );
-          })}
-          {filteredItems.length === 0 && (
-            <div className="dropdown-item disabled">No results found</div>
+          {filtered.length === 0 && (
+            <div className="dropdown-item disabled" style={{ color: '#888', padding: '12px 16px' }}>
+              No results
+            </div>
           )}
+          {filtered.map((item, idx) => (
+            <div
+              key={idx}
+              className={`dropdown-item${idx === highlighted ? ' highlighted' : ''}${selected === item ? ' selected' : ''}`}
+              style={{
+                padding: '12px 16px',
+                cursor: 'pointer',
+                color:
+                  selected === item
+                    ? '#fff'
+                    : idx === highlighted
+                    ? '#fff'
+                    : '#e0e0e0',
+                background:
+                  selected === item
+                    ? '#4a90e2'
+                    : idx === highlighted
+                    ? '#333'
+                    : 'transparent',
+                fontWeight: selected === item ? 600 : 400,
+                borderBottom: '1px solid #404040',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={() => setHighlighted(idx)}
+              onMouseDown={e => {
+                e.preventDefault();
+                onSelect(item);
+                setOpen(false);
+              }}
+            >
+              {displayKey(item)}
+            </div>
+          ))}
         </div>
       )}
     </div>
   );
-};
+}
 
 const ModelFoundry = ({ user }) => {
   const [datasets, setDatasets] = useState([]);
@@ -220,7 +298,7 @@ const ModelFoundry = ({ user }) => {
         <p className="instruction-text">
           📁 <strong>Choose your training dataset:</strong> Upload or select a dataset below.
         </p>
-        <Dropdown
+        <CustomDropdown
           label="Select Dataset"
           items={datasets}
           selected={selectedDataset}
@@ -265,7 +343,7 @@ const ModelFoundry = ({ user }) => {
         <p className="instruction-text">
           🧠 <strong>Switch between trained models:</strong> Select and deploy any previously trained model.
         </p>
-        <Dropdown
+        <CustomDropdown
           label="Select Model"
           items={models}
           selected={selectedModel}

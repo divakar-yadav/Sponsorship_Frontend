@@ -3,24 +3,26 @@ body, html {
   padding: 0;
   height: 100%;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #f5f5f5;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
 }
 
 .app-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #1a1a1a;
 }
 
 .top-navbar {
-  background-color: #2c3e50;
-  color: white;
+  background-color: #2d2d2d;
+  color: #e0e0e0;
   padding: 0.75rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #2980b9;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid #4a90e2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 h2.app-title {
@@ -30,24 +32,26 @@ h2.app-title {
   display: flex;
   align-items: center;
   gap: 10px;
+  color: #e0e0e0;
 }
 
 .app-title-icon {
   width: 28px;
   height: 28px;
-  background-color: #3498db;
+  background-color: #4a90e2;
   border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 1rem;
+  color: #ffffff;
 }
 
 .auth-section {
   display: flex;
   align-items: center;
-  background-color: #3498db;
+  background-color: #4a90e2;
   color: white;
   /* padding: 6px 12px; */
   border-radius: 20px;
@@ -59,7 +63,7 @@ h2.app-title {
 }
 
 .auth-section:hover {
-  background-color: #2980b9;
+  background-color: #357abd;
 }
 
 .auth-name {
@@ -70,10 +74,10 @@ h2.app-title {
   position: absolute;
   top: 45px;
   right: 0;
-  background: white;
-  border: 1px solid #ddd;
+  background: #2d2d2d;
+  border: 1px solid #404040;
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   z-index: 100;
   min-width: 150px;
   overflow: hidden;
@@ -82,29 +86,30 @@ h2.app-title {
 .auth-dropdown-item {
   padding: 10px 16px;
   cursor: pointer;
-  color: #2c3e50;
+  color: #e0e0e0;
   font-size: 0.95rem;
 }
 
 .auth-dropdown-item:hover {
-  background-color: #ecf0f1;
+  background-color: #404040;
 }
 
 .main-content {
   display: flex;
   flex: 1;
   overflow: hidden;
+  background-color: #1a1a1a;
 }
 
 .side-nav {
   width: 104px;
-  background-color: #ffffff;
+  background-color: #2d2d2d;
   padding-top: 0;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid #e5e5e5;
+  border-right: 1px solid #404040;
   height: 100vh;
-  box-shadow: inset -1px 0 0 #eaeaea;
+  box-shadow: inset -1px 0 0 #404040;
   font-size: 0.95rem;
   align-items: center;
 }
@@ -115,7 +120,7 @@ h2.app-title {
   align-items: center;
   justify-content: center;
   padding: 16px 0;
-  color: #2c3e50;
+  color: #b0b0b0;
   text-decoration: none;
   font-weight: 500;
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -126,14 +131,14 @@ h2.app-title {
 }
 
 .side-nav a:hover {
-  background-color: #f5f6fa;
-  color: #000;
+  background-color: #404040;
+  color: #e0e0e0;
 }
 
 .side-nav a.active {
-  background-color: #eaf4ff;
-  color: #007aff;
-  border-left: 4px solid #007aff;
+  background-color: #1e3a5f;
+  color: #4a90e2;
+  border-left: 4px solid #4a90e2;
   font-weight: 600;
 }
 
@@ -146,6 +151,7 @@ h2.app-title {
   flex: 1;
   height: 100%;
   overflow-y: auto;
+  background-color: #1a1a1a;
   /* padding: 1.5rem; */
 }
 
@@ -166,21 +172,21 @@ h2.app-title {
 }
 
 .btn-login-header {
-  background-color: #b3b3b3;
+  background-color: #555555;
   color: white;
 }
 
 .btn-login-header:hover {
-  background-color: #999;
+  background-color: #666666;
 }
 
 .btn-signup-header {
-  background-color: #3498db;
+  background-color: #4a90e2;
   color: white;
 }
 
 .btn-signup-header:hover {
-  background-color: #60a5d2;
+  background-color: #357abd;
 }
 .auth-toggle {
   display: flex;
@@ -189,12 +195,12 @@ h2.app-title {
   cursor: pointer;
   padding: 6px 12px;
   border-radius: 20px;
-  background-color: #3498db;
+  background-color: #4a90e2;
   color: white;
   font-weight: 500;
   transition: background 0.3s ease;
 }
 
 .auth-toggle:hover {
-  background-color: #2980b9;
+  background-color: #357abd;
 }

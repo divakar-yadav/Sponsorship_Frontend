@@ -76,7 +76,7 @@ export default function HomePage() {
     if (name === 'company') {
       const filtered = companyData.filter(c =>
         c['Company Name'].toLowerCase().includes(value.toLowerCase())
-      ).slice(0, 4);
+      );
       setSuggestions(filtered);
       setShowDropdown(true);
       setFormData(prev => ({ ...prev, company: value }));
@@ -84,7 +84,7 @@ export default function HomePage() {
   };
 
   const handleFocus = () => {
-    setSuggestions(companyData.slice(0, 4));
+    setSuggestions(companyData);
     setShowDropdown(true);
   };
 
@@ -136,11 +136,58 @@ export default function HomePage() {
   };
 
   const confusionMatrixOptions = chartData && {
-    chart: { type: 'column' },
-    title: { text: 'Confusion Matrix' },
+    chart: { 
+      type: 'column',
+      backgroundColor: '#2d2d2d',
+      style: {
+        fontFamily: 'Segoe UI, sans-serif'
+      }
+    },
+    title: { 
+      text: 'Confusion Matrix',
+      style: {
+        color: '#e0e0e0'
+      }
+    },
     credits: { enabled: false },
-    xAxis: { categories: ['Predicted Positive', 'Predicted Negative'] },
-    yAxis: { min: 0, title: { text: 'Count' } },
+    xAxis: { 
+      categories: ['Predicted Positive', 'Predicted Negative'],
+      labels: {
+        style: {
+          color: '#e0e0e0'
+        }
+      },
+      lineColor: '#555',
+      tickColor: '#555'
+    },
+    yAxis: { 
+      min: 0, 
+      title: { 
+        text: 'Count',
+        style: {
+          color: '#e0e0e0'
+        }
+      },
+      labels: {
+        style: {
+          color: '#e0e0e0'
+        }
+      },
+      gridLineColor: '#555'
+    },
+    legend: {
+      itemStyle: {
+        color: '#e0e0e0'
+      },
+      itemHoverStyle: {
+        color: '#4a90e2'
+      }
+    },
+    plotOptions: {
+      column: {
+        borderColor: '#555'
+      }
+    },
     series: [
       {
         name: 'Actual Positive',
@@ -160,9 +207,60 @@ export default function HomePage() {
   };
 
   const rocOptions = chartData && {
-    title: { text: 'ROC Curve' },
-    xAxis: { title: { text: 'False Positive Rate' } },
-    yAxis: { title: { text: 'True Positive Rate' } },
+    chart: {
+      backgroundColor: '#2d2d2d',
+      style: {
+        fontFamily: 'Segoe UI, sans-serif'
+      }
+    },
+    title: { 
+      text: 'ROC Curve',
+      style: {
+        color: '#e0e0e0'
+      }
+    },
+    xAxis: { 
+      title: { 
+        text: 'False Positive Rate',
+        style: {
+          color: '#e0e0e0'
+        }
+      },
+      labels: {
+        style: {
+          color: '#e0e0e0'
+        }
+      },
+      lineColor: '#555',
+      tickColor: '#555'
+    },
+    yAxis: { 
+      title: { 
+        text: 'True Positive Rate',
+        style: {
+          color: '#e0e0e0'
+        }
+      },
+      labels: {
+        style: {
+          color: '#e0e0e0'
+        }
+      },
+      gridLineColor: '#555'
+    },
+    legend: {
+      itemStyle: {
+        color: '#e0e0e0'
+      },
+      itemHoverStyle: {
+        color: '#4a90e2'
+      }
+    },
+    plotOptions: {
+      line: {
+        color: '#4a90e2'
+      }
+    },
     series: [{
       name: 'ROC',
       data: chartData.rocCurve,
@@ -172,10 +270,58 @@ export default function HomePage() {
   };
 
   const barOptions = chartData && {
-    chart: { type: 'bar' },
-    title: { text: 'Precision, Recall, F1, Accuracy' },
-    xAxis: { categories: ['Metrics'] },
-    yAxis: { min: 0, max: 1 },
+    chart: { 
+      type: 'bar',
+      backgroundColor: '#2d2d2d',
+      style: {
+        fontFamily: 'Segoe UI, sans-serif'
+      }
+    },
+    title: { 
+      text: 'Precision, Recall, F1, Accuracy',
+      style: {
+        color: '#e0e0e0'
+      }
+    },
+    xAxis: { 
+      categories: ['Metrics'],
+      labels: {
+        style: {
+          color: '#e0e0e0'
+        }
+      },
+      lineColor: '#555',
+      tickColor: '#555'
+    },
+    yAxis: { 
+      min: 0, 
+      max: 1,
+      title: {
+        text: 'Score',
+        style: {
+          color: '#e0e0e0'
+        }
+      },
+      labels: {
+        style: {
+          color: '#e0e0e0'
+        }
+      },
+      gridLineColor: '#555'
+    },
+    legend: {
+      itemStyle: {
+        color: '#e0e0e0'
+      },
+      itemHoverStyle: {
+        color: '#4a90e2'
+      }
+    },
+    plotOptions: {
+      bar: {
+        borderColor: '#555'
+      }
+    },
     series: [
       { name: 'Precision', data: [chartData.precision] },
       { name: 'Recall', data: [chartData.recall] },
@@ -200,7 +346,7 @@ export default function HomePage() {
           💡 <strong>How to use this predictor:</strong>
           <ul>
             <li>Start by selecting one or more companies from the input box below.</li>
-            <li>Once selected, we’ll analyze each company using our trained model and show you:</li>
+            <li>Once selected, we'll analyze each company using our trained model and show you:</li>
             <ul style={{ marginTop: '4px' }}>
               <li><code>Probability of Sponsorship</code> (logistic score)</li>
             </ul>
@@ -266,16 +412,54 @@ export default function HomePage() {
           <div className='container-wrapper'>
             {modelInfo && (
               <div className="model-info-section">
-                <h3>Model Basic Info</h3>
                 <p className="chart-instruction">
                   ℹ️ This section gives you details about the currently active model, including when it was last trained and the dataset it used.
                 </p>
-                <p><strong>Model Name:</strong> {modelInfo.model_name}</p>
-                <p><strong>Status:</strong> <span className="status-badge">🟢 Active</span></p>
-                <p><strong>Model ID:</strong> {modelInfo.model_id}</p>
-                <p><strong>Last Updated:</strong> {new Date(modelInfo.last_updated).toLocaleString()}</p>
-                <p><strong>Dataset Id:</strong> {modelInfo.dataset_id}</p>
-                <p><strong>Dataset:</strong> {modelInfo.dataset_name}</p>
+                <h3>Model Basic Info</h3>
+                <div className="model-info-grid">
+                  <div className="info-item">
+                    <div className="info-icon">🤖</div>
+                    <div className="info-content">
+                      <div className="info-label">Model Name</div>
+                      <div className="info-value">{modelInfo.model_name}</div>
+                    </div>
+                  </div>
+                  <div className="info-item">
+                    <div className="info-icon">🟢</div>
+                    <div className="info-content">
+                      <div className="info-label">Status</div>
+                      <div className="info-value status-active">Active</div>
+                    </div>
+                  </div>
+                  <div className="info-item">
+                    <div className="info-icon">🆔</div>
+                    <div className="info-content">
+                      <div className="info-label">Model ID</div>
+                      <div className="info-value">{modelInfo.model_id}</div>
+                    </div>
+                  </div>
+                  <div className="info-item">
+                    <div className="info-icon">🕒</div>
+                    <div className="info-content">
+                      <div className="info-label">Last Updated</div>
+                      <div className="info-value">{new Date(modelInfo.last_updated).toLocaleString()}</div>
+                    </div>
+                  </div>
+                  <div className="info-item">
+                    <div className="info-icon">📊</div>
+                    <div className="info-content">
+                      <div className="info-label">Dataset ID</div>
+                      <div className="info-value">{modelInfo.dataset_id}</div>
+                    </div>
+                  </div>
+                  <div className="info-item">
+                    <div className="info-icon">📁</div>
+                    <div className="info-content">
+                      <div className="info-label">Dataset</div>
+                      <div className="info-value">{modelInfo.dataset_name}</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
             <div className="chart-container">

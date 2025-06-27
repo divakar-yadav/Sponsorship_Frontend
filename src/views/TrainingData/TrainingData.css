@@ -1,6 +1,8 @@
 .training-data {
   padding: 20px;
   font-family: sans-serif;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
 }
 
 .replace-section,
@@ -12,19 +14,20 @@
     margin-top: 30px;
     margin-bottom: 30px;
     padding: 10px;
-    border: 1px solid lightgrey;
+    border: 1px solid #555;
     border-radius: 5px;
     margin-bottom: 2rem;
-    background-color: #f9f9f9;
+    background-color: #2d2d2d;
     padding: 1.5rem;
     border-radius: 8px;
     margin-bottom: 2rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .status {
   margin-top: 10px;
   font-weight: bold;
+  color: #e0e0e0;
 }
 
 .search-box {
@@ -32,6 +35,10 @@
   margin-bottom: 10px;
   margin-right: 15px;
   width: 250px;
+  background-color: #404040;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 4px;
 }
 
 .data-table {
@@ -41,67 +48,130 @@
 
 .data-table th,
 .data-table td {
-  border: 1px solid #ccc;
+  border: 1px solid #555;
   padding: 8px;
   text-align: center;
+  color: #e0e0e0;
+}
+
+.data-table th {
+  background-color: #404040;
+  color: #e0e0e0;
+}
+
+.data-table td {
+  background-color: #2d2d2d;
 }
 
 .data-table input {
   width: 90%;
   padding: 5px;
+  background-color: #404040;
+  color: #e0e0e0;
+  border: 1px solid #555;
+  border-radius: 3px;
 }
 
 .data-table button {
   padding: 4px 10px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
 }
 .training-data h2 {
     font-size: 25px;
     padding: 10px;
     font-weight: 200;
     padding-left: 0px;
-    color: #007aff;
+    color: #4a90e2;
 }
 .replace-section h3 {
     font-weight: 700;
     font-size: larger;
     padding: 20px 0px;
+    color: #e0e0e0;
 }
 .add-row-section h3 {
     font-weight: 700;
     font-size: larger;
+    color: #e0e0e0;
 }
 .training-upload-wrapper {
     padding: 35px;
     text-align: center;
     font-family: 'Segoe UI', sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
 }
 
 .training-upload-wrapper h2 {
     font-size: 13px;
     font-weight: bold;
     margin-bottom: 5px;
+    color: #e0e0e0;
 }
 .training-upload-wrapper p {
     font-size: 11px;
-    color: #666;
+    color: #b0b0b0;
     margin-bottom: 20px;
 }
 
+.training-section, .training-upload-wrapper, .upload-status {
+  background: linear-gradient(135deg, #23272f 0%, #181a20 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  padding: 2rem 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #404040;
+}
+
+.dataset-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #181a20;
+  margin-bottom: 0;
+}
+
+.dataset-table th, .dataset-table td {
+  border: 1px solid #555;
+  padding: 12px 10px;
+  text-align: center;
+  color: #e0e0e0;
+  font-size: 14px;
+}
+
+.dataset-table th {
+  background: linear-gradient(135deg, #404040 0%, #353535 100%);
+  color: #e0e0e0;
+  font-weight: 600;
+}
+
+.dataset-table td {
+  background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%);
+}
 
 .upload-box {
-    border: 2px dashed #3498db;
-    border-radius: 12px;
-    background-color: #f3f8ff;
-    padding: 9px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    width: 65%;
-    margin: auto;
-    font-size: xx-small;
+  border: 2px dashed #4a90e2;
+  border-radius: 12px;
+  background-color: #1e3a5f;
+  padding: 40px 0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  width: 65%;
+  margin: 24px auto 24px auto;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .upload-box:hover {
-  background-color: #e8f0fe;
+  background-color: #2d4a7a;
 }
 
 .upload-icon {
@@ -112,19 +182,19 @@
 .drop-title {
   font-size: 20px;
   font-weight: bold;
-  color: #2962ff;
+  color: #4a90e2;
   margin-bottom: 10px;
 }
 
 .supported-formats {
   font-size: 14px;
-  color: #777;
+  color: #b0b0b0;
   margin-bottom: 15px;
 }
 
 .browse-btn {
   padding: 10px 20px;
-  background-color: #3498db;;
+  background-color: #4a90e2;
   color: white;
   border: none;
   border-radius: 6px;
@@ -133,33 +203,34 @@
 }
 
 .browse-btn:hover {
-  background-color: #0039cb;
+  background-color: #357abd;
 }
 
 .upload-footer {
   margin-top: 25px;
 }
 
-.upload-btn {
-    padding: 8px 25px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 11px;
-    margin-top: 20px;
+.upload-btn, .dataset-table button {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  color: #fff;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  margin-top: 18px;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.15);
+  transition: all 0.2s;
 }
-
-.upload-btn:hover {
-  background-color: #3498db;
+.upload-btn:hover, .dataset-table button:hover {
+  background: #357abd;
 }
 
 .status-msg {
   margin-top: 15px;
   font-size: 16px;
-  color: #444;
+  color: #e0e0e0;
 }
 
 .upload-icon-emoji {
@@ -169,24 +240,27 @@
 .file-name {
   margin-top: 10px;
   font-size: 14px;
-  color: #555;
+  color: #e0e0e0;
   font-weight: 500;
 }
 
 .selected-file {
+  color: #e0e0e0;
   margin-top: 10px;
-  font-size: 14px;
-  color: #555;
-  font-weight: 500;
+  font-size: 15px;
+  background: #23272f;
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: inline-block;
 }
 
 .upload-instruction {
-    background-color: #f9f9fc;
-    border-left: 5px solid #007bff;
+    background-color: #1e3a5f;
+    border-left: 5px solid #4a90e2;
     padding: 12px 16px;
     border-radius: 8px;
     margin-bottom: 16px;
-    color: #333;
+    color: #e0e0e0;
     font-size: 14px;
     line-height: 1.5;
     width: 70%;
@@ -195,7 +269,7 @@
 }
 
 .upload-instruction strong {
-  color: #0056b3;
+  color: #4a90e2;
 }
 
 .upload-instruction ul {
@@ -204,96 +278,65 @@
 }
 
 .upload-instruction code {
-  background-color: #eef3f9;
+  background-color: #404040;
   font-family: monospace;
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 13px;
+  color: #e0e0e0;
 }
 
 .training-dataset-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 24px;
-    width: 70%;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    margin: auto;
+    padding: 32px 40px;
 }
 
-.training-dataset-container h2 {
-  font-size: 20px;
-  margin-bottom: 16px;
-}
-
-.dataset-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.dataset-table th, .dataset-table td {
-    padding: 2px;
-    font-size: x-small;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.dataset-table th {
-  background-color: #f5f5f5;
-}
-
-.dataset-table button {
-  background-color: #007bff;
-  color: white;
-  padding: 4px 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.dataset-table button:hover {
-  background-color: #0056b3;
+.training-dataset-container h2, .training-dataset-container h3 {
+  color: #4a90e2;
+  font-weight: 200;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
 }
 
 .pagination-controls {
-    margin-top: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
 }
 
 .pagination-controls button {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  padding: 4px 8px;
+  padding: 8px 18px;
+  background: #23272f;
+  color: #4a90e2;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
 }
-
 .pagination-controls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
 .upload-box.disabled {
   pointer-events: none;
   opacity: 0.6;
 }
 
 .upload-btn[disabled] {
-  background-color: #ccc;
+  background-color: #555;
   cursor: not-allowed;
 }
-.upload-status {
-    background: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 40px;
-}
+
 .training-data-header {
     padding: 10px;
-    background: #fff;
+    background: #2d2d2d;
     border-radius: 5px;
+    border: 1px solid #404040;
+    color: #e0e0e0;
 }
 .loader-section {
   display: flex;
@@ -303,7 +346,7 @@
 }
 
 .spinner {
-  border: 6px solid #eee;
+  border: 6px solid #404040;
   border-top: 6px solid #4a90e2;
   border-radius: 50%;
   width: 48px;
@@ -315,4 +358,9 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.upload-btn {
+  margin-top: 18px;
+  margin-bottom: 24px;
 }
