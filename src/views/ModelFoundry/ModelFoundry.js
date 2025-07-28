@@ -170,6 +170,12 @@ function CustomDropdown({ label, items, selected, onSelect, displayKey }) {
   );
 }
 
+const modelTypeMap = {
+  'logistic': 'Logistic',
+  'randomforest': 'RandomForest',
+  'xgboost': 'XGBoost'
+};
+
 const ModelFoundry = ({ user }) => {
   const [datasets, setDatasets] = useState([]);
   const [models, setModels] = useState([]);
@@ -179,42 +185,49 @@ const ModelFoundry = ({ user }) => {
   const [isDeploying, setIsDeploying] = useState(false);
   const [loadingOverlay, setLoadingOverlay] = useState(true);
   const [funMessage, setFunMessage] = useState('');
+  const [activeModelTab, setActiveModelTab] = useState('logistic');
 
+  // Fetch datasets once, fetch models on tab change
   useEffect(() => {
     const randomMsg = funMessages[Math.floor(Math.random() * funMessages.length)];
     setFunMessage(randomMsg);
-
-    async function fetchOptions() {
+    async function fetchDatasets() {
       try {
         const datasetRes = await fetch(`${BASE_URL}/api/list-training-data`);
-        const modelRes = await fetch(`${BASE_URL}/api/list-models`);
-
         const datasetData = await datasetRes.json();
-        const modelData = await modelRes.json();
-
         const allDatasets = datasetData.datasets || [];
-        const allModels = modelData.models || [];
-
         setDatasets(allDatasets);
-        setModels(allModels);
-
-        const currentModel = allModels.find((m) => m.status === 'Current');
-        if (currentModel) setSelectedModel(currentModel);
-
         const latestDataset = [...allDatasets].sort((a, b) =>
           new Date(b.uploaded_at) - new Date(a.uploaded_at)
         )[0];
         if (latestDataset) setSelectedDataset(latestDataset);
       } catch (err) {
-        console.error('Error loading datasets/models:', err);
-        toast.error('Failed to load data.');
+        toast.error('Failed to load datasets.');
+      }
+    }
+    fetchDatasets();
+  }, []);
+
+  // Fetch models when tab changes
+  useEffect(() => {
+    async function fetchModels() {
+      setLoadingOverlay(true);
+      try {
+        const apiType = modelTypeMap[activeModelTab] || 'Logistic';
+        const modelRes = await fetch(`${BASE_URL}/api/list-models?model_type=${apiType}`);
+        const modelData = await modelRes.json();
+        const allModels = modelData.models || [];
+        setModels(allModels);
+        const currentModel = allModels.find((m) => m.status === 'Current');
+        if (currentModel) setSelectedModel(currentModel);
+      } catch (err) {
+        toast.error('Failed to load models.');
       } finally {
         setLoadingOverlay(false);
       }
     }
-
-    fetchOptions();
-  }, []);
+    fetchModels();
+  }, [activeModelTab]);
 
   const handleTrain = async () => {
     if (!selectedDataset) {
@@ -226,7 +239,10 @@ const ModelFoundry = ({ user }) => {
     setLoadingOverlay(true);
     setFunMessage('Crunching numbers like a caffeinated mathematician...');
     try {
-      const res = await fetch(`${BASE_URL}/api/train-model`, {
+      let trainEndpoint = '/api/train-model-logistic';
+      if (activeModelTab === 'randomforest') trainEndpoint = '/api/train-model-random-forest';
+      if (activeModelTab === 'xgboost') trainEndpoint = '/api/train-model-xgboost';
+      const res = await fetch(`${BASE_URL}${trainEndpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -261,7 +277,8 @@ const ModelFoundry = ({ user }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: selectedModel.model_id,
+          model_id: selectedModel.model_id,
+          model_type: selectedModel.model_type,
           done_by: user?.name || 'Unknown'
         }),
       });
@@ -285,6 +302,37 @@ const ModelFoundry = ({ user }) => {
     <div className="model-foundry">
       <h2>Model Operations</h2>
       <ToastContainer position="top-right" autoClose={3000} />
+      <div className="model-tabs">
+        <button
+          className={activeModelTab === 'logistic' ? 'active' : ''}
+          onClick={() => setActiveModelTab('logistic')}
+        >
+          Logistic Regression
+        </button>
+        <button
+          className={activeModelTab === 'randomforest' ? 'active' : ''}
+          onClick={() => setActiveModelTab('randomforest')}
+        >
+          Random Forest
+        </button>
+        <button
+          className={activeModelTab === 'xgboost' ? 'active' : ''}
+          onClick={() => setActiveModelTab('xgboost')}
+        >
+          XGBoost
+        </button>
+      </div>
+      <div style={{marginBottom: 32}}>
+        {activeModelTab === 'logistic' && (
+          <div style={{color:'#4a90e2',fontWeight:600,fontSize:'1.2em',padding:'24px 0'}}>Logistic Model Area</div>
+        )}
+        {activeModelTab === 'randomforest' && (
+          <div style={{color:'#4a90e2',fontWeight:600,fontSize:'1.2em',padding:'24px 0'}}>Random Forest Model Area</div>
+        )}
+        {activeModelTab === 'xgboost' && (
+          <div style={{color:'#4a90e2',fontWeight:600,fontSize:'1.2em',padding:'24px 0'}}>XG Boost Model Area</div>
+        )}
+      </div>
 
       {loadingOverlay && (
         <div className="overlay-loader">
