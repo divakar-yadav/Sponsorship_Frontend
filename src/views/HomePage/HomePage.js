@@ -25,6 +25,8 @@ export default function HomePage() {
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const modelDropdownRef = useRef();
   const [activeModelTab, setActiveModelTab] = useState('logistic');
+  const [milwaukeeCompanies, setMilwaukeeCompanies] = useState([]);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
 
   // Clear prediction when model changes
   useEffect(() => {
@@ -207,35 +209,132 @@ const modelTypeMap = {
     if (name === 'company') {
       setFormData(prev => ({ ...prev, company: value }));
       if (value.trim().length === 0) {
-        setSuggestions([]);
-        setShowDropdown(false);
+        // Show Milwaukee companies when input is empty
+        setSuggestions(milwaukeeCompanies);
+        setShowDropdown(true);
+        setIsSearchLoading(false);
         return;
       }
+      
+      setIsSearchLoading(true);
       fetch(`${BASE_URL}/api/search-companies?q=${encodeURIComponent(value)}`)
         .then(res => res.json())
         .then(data => {
-          setSuggestions(data.companies || []);
+          const searchResults = data.companies || [];
+          
+          // Prioritize Milwaukee companies in search results
+          const milwaukeeResults = searchResults.filter(company => 
+            company.City && company.City.toLowerCase() === 'milwaukee'
+          );
+          const otherResults = searchResults.filter(company => 
+            !company.City || company.City.toLowerCase() !== 'milwaukee'
+          );
+          
+          // Combine with Milwaukee companies first
+          const prioritizedResults = [...milwaukeeResults, ...otherResults];
+          
+          setSuggestions(prioritizedResults);
           setShowDropdown(true);
+          setIsSearchLoading(false);
         })
         .catch(() => {
           setSuggestions([]);
           setShowDropdown(false);
+          setIsSearchLoading(false);
         });
     }
   };
 
-  const handleFocus = () => {
+  // Fetch Milwaukee companies
+  const fetchMilwaukeeCompanies = async () => {
+    setIsSearchLoading(true);
+    try {
+      const response = await fetch(`${BASE_URL}/api/filter-companies?field=City&value=Milwaukee`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Parse the correct response structure
+        if (data.companies && Array.isArray(data.companies)) {
+          setMilwaukeeCompanies(data.companies);
+          console.log('Milwaukee companies fetched:', data.total_results, 'companies');
+        } else {
+          console.error('Invalid response format for Milwaukee companies');
+          setMilwaukeeCompanies([]);
+        }
+      } else {
+        console.error('Failed to fetch Milwaukee companies');
+        setMilwaukeeCompanies([]);
+      }
+    } catch (error) {
+      console.error('Error fetching Milwaukee companies:', error);
+      setMilwaukeeCompanies([]);
+    } finally {
+      setIsSearchLoading(false);
+    }
+  };
+
+  const handleFocus = async () => {
+    // Show loading immediately on first click
+    setIsSearchLoading(true);
+    setShowDropdown(true);
+    
+    // Always fetch Milwaukee companies when input is focused
+    let milwaukeeData = [];
+    try {
+      const response = await fetch(`${BASE_URL}/api/filter-companies?field=City&value=Milwaukee`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.companies && Array.isArray(data.companies)) {
+          milwaukeeData = data.companies;
+          setMilwaukeeCompanies(data.companies);
+          console.log('Milwaukee companies fetched:', data.total_results, 'companies');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching Milwaukee companies:', error);
+    }
+    
     if (formData.company.trim().length > 0) {
+      // If there's text, search for companies
       fetch(`${BASE_URL}/api/search-companies?q=${encodeURIComponent(formData.company)}`)
         .then(res => res.json())
         .then(data => {
-          setSuggestions(data.companies || []);
-          setShowDropdown(true);
+          const searchResults = data.companies || [];
+          
+          // Prioritize Milwaukee companies in search results
+          const milwaukeeResults = searchResults.filter(company => 
+            company.City && company.City.toLowerCase() === 'milwaukee'
+          );
+          const otherResults = searchResults.filter(company => 
+            !company.City || company.City.toLowerCase() !== 'milwaukee'
+          );
+          
+          // Combine with Milwaukee companies first
+          const prioritizedResults = [...milwaukeeResults, ...otherResults];
+          
+          setSuggestions(prioritizedResults);
+          setIsSearchLoading(false);
         })
         .catch(() => {
           setSuggestions([]);
           setShowDropdown(false);
+          setIsSearchLoading(false);
         });
+    } else {
+      // Show Milwaukee companies by default when input is empty
+      setSuggestions(milwaukeeData);
+      setIsSearchLoading(false);
     }
   };
 
@@ -772,7 +871,7 @@ const modelTypeMap = {
         <div className="home-instruction">
           💡 <strong>How to use this predictor:</strong>
           <ul>
-            <li><strong>Select a model type</strong> from the dropdown below (e.g., Logistic, Random Forest, XG Boost). The prediction will use the latest deployed version of the selected model.</li>
+            <li><strong>First, select a model type</strong> from the dropdown above (e.g., Logistic, Random Forest, XG Boost). The prediction will use the latest deployed version of the selected model.</li>
             <li>Then, <strong>select one or more companies</strong> from the input box below.</li>
             <li>Click <strong>Predict</strong> to analyze each company using your chosen model. You'll see:</li>
             <ul style={{ marginTop: '4px' }}>
@@ -783,43 +882,8 @@ const modelTypeMap = {
         </div>
         <div className="form-fields">
           <input name="university" value="University of Wisconsin-Milwaukee" readOnly />
-          <div className="autocomplete-container" ref={dropdownRef}>
-            <input
-              name="company"
-              value={formData.company}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              placeholder="Select Company"
-              autoComplete="off"
-            />
-            {showDropdown && suggestions.length > 0 && (
-              <ul className="autocomplete-list">
-                {suggestions.map((c, i) => {
-                  const isSelected = selectedCompanies.some(sel => sel['Company Name'] === c['Company Name']);
-                  return (
-                    <li
-                      key={i}
-                      style={{display:'flex',justifyContent:'space-between',alignItems:'center', cursor:'pointer'}}
-                      onClick={() => handleSuggestionClick(c)}
-                    >
-                      <span style={{flex:1}}>
-                        {c['Company Name']} {isSelected && <span className="check-mark">✓</span>}
-                      </span>
-                      <button
-                        className="view-btn"
-                        style={{marginLeft:8,padding:'2px 10px',fontSize:12,borderRadius:5,border:'none',background:'#4a90e2',color:'#fff',cursor:'pointer'}}
-                        onClick={e => {e.stopPropagation(); setPopupCompany(c);}}
-                        type="button"
-                      >
-                        View
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-          {/* Model Type Dropdown */}
+          
+          {/* Model Type Dropdown - Moved to top */}
           <div className="autocomplete-container" ref={modelDropdownRef} style={{ marginTop: 28, position: 'relative' }}>
             <div
               className={`model-autocomplete-input${showModelDropdown ? ' open' : ''}`}
@@ -860,6 +924,87 @@ const modelTypeMap = {
                   </li>
                 ))}
               </ul>
+            )}
+          </div>
+          
+          {/* Company Selection - Moved below model selection */}
+          <div className="autocomplete-container" ref={dropdownRef} style={{ marginTop: 28, position: 'relative' }}>
+            <input
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              onFocus={handleFocus}
+              placeholder={isSearchLoading ? "Searching..." : "Select Company"}
+              autoComplete="off"
+              style={{ 
+                paddingRight: isSearchLoading ? '40px' : '12px',
+                color: isSearchLoading ? '#888' : 'inherit'
+              }}
+            />
+            {isSearchLoading && (
+              <div style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: '16px',
+                height: '16px',
+                border: '2px solid #f3f3f3',
+                borderTop: '2px solid #4a90e2',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+            )}
+            {showDropdown && (
+              <>
+                {isSearchLoading ? (
+                  <ul className="autocomplete-list">
+                    <li style={{display:'flex',justifyContent:'center',alignItems:'center',padding:'12px',color:'#888'}}>
+                      <div style={{
+                        width: '16px',
+                        height: '16px',
+                        border: '2px solid #f3f3f3',
+                        borderTop: '2px solid #4a90e2',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                        marginRight: '8px'
+                      }}></div>
+                      Loading companies...
+                    </li>
+                  </ul>
+                ) : suggestions.length > 0 ? (
+                  <ul className="autocomplete-list">
+                    {suggestions.map((c, i) => {
+                      const isSelected = selectedCompanies.some(sel => sel['Company Name'] === c['Company Name']);
+                      return (
+                        <li
+                          key={i}
+                          style={{display:'flex',justifyContent:'space-between',alignItems:'center', cursor:'pointer'}}
+                          onClick={() => handleSuggestionClick(c)}
+                        >
+                          <span style={{flex:1}}>
+                            {c['Company Name']} {isSelected && <span className="check-mark">✓</span>}
+                          </span>
+                          <button
+                            className="view-btn"
+                            style={{marginLeft:8,padding:'2px 10px',fontSize:12,borderRadius:5,border:'none',background:'#4a90e2',color:'#fff',cursor:'pointer'}}
+                            onClick={e => {e.stopPropagation(); setPopupCompany(c);}}
+                            type="button"
+                          >
+                            View
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <ul className="autocomplete-list">
+                    <li style={{padding:'12px',color:'#888',textAlign:'center'}}>
+                      No companies found
+                    </li>
+                  </ul>
+                )}
+              </>
             )}
           </div>
           <div className="chip-container">
@@ -1019,19 +1164,28 @@ const modelTypeMap = {
                   <div className="overview-item">
                     <span className="label">Stock Symbol:</span>
                     <span className="value">
-                      {popupCompany['Stock Symbol'] ? (
-                        <div className="stock-symbol-container">
-                          <span className="stock-symbol">{popupCompany['Stock Symbol']}</span>
-                          <a 
-                            href={`https://finance.yahoo.com/quote/${popupCompany['Stock Symbol']}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="stock-link yahoo"
-                          >
-                            📈 View Stock History
-                          </a>
-                        </div>
-                      ) : 'N/A'}
+                      {(() => {
+                        const stockSymbol = popupCompany['Stock Symbol'];
+                        
+                        // Check if stock symbol exists and is not NAN
+                        if (stockSymbol && stockSymbol !== 'NAN' && stockSymbol !== 'nan' && stockSymbol.trim() !== '') {
+                          return (
+                            <div className="stock-symbol-container">
+                              <span className="stock-symbol">{stockSymbol}</span>
+                              <a 
+                                href={`https://finance.yahoo.com/quote/${stockSymbol}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="stock-link yahoo"
+                              >
+                                📈 View Stock History
+                              </a>
+                            </div>
+                          );
+                        } else {
+                          return stockSymbol || 'N/A';
+                        }
+                      })()}
                     </span>
                   </div>
                   <div className="overview-item">
@@ -1045,27 +1199,39 @@ const modelTypeMap = {
 
               {/* Past Higher Education Giving */}
               <div className="popup-section">
-                <h3>Past Higher Education Giving</h3>
+                <h3>Past Higher Education Sponsorship</h3>
                 <div className="giving-history-container">
-                  {popupCompany['past_higher_ed_giving'] ? 
-                    popupCompany['past_higher_ed_giving'].split(';').map((giving, index) => (
-                      <div key={index} className="giving-item">
+                  {(() => {
+                    const givingData = popupCompany['past_higher_ed_giving'];
+                    
+                    if (givingData && typeof givingData === 'string' && givingData.trim() !== '') {
+                      // Split by semicolon and filter out empty entries
+                      const givingItems = givingData.split(';').filter(item => item.trim() !== '');
+                      
+                      if (givingItems.length > 0) {
+                        return givingItems.map((giving, index) => (
+                          <div key={index} className="giving-item">
+                            <div className="giving-icon">🎓</div>
+                            <div className="giving-content">
+                              <h4>Institution {index + 1}</h4>
+                              <p>{giving.trim()}</p>
+                            </div>
+                          </div>
+                        ));
+                      }
+                    }
+                    
+                    // Fallback when no data or invalid data
+                    return (
+                      <div className="giving-item">
                         <div className="giving-icon">🎓</div>
                         <div className="giving-content">
-                          <h4>Institution {index + 1}</h4>
-                          <p>{giving.trim()}</p>
+                          <h4>No Previous Giving Data</h4>
+                          <p>No historical higher education funding data available for this company.</p>
                         </div>
                       </div>
-                    ))
-                  : (
-                    <div className="giving-item">
-                      <div className="giving-icon">🎓</div>
-                      <div className="giving-content">
-                        <h4>No Previous Giving Data</h4>
-                        <p>No historical higher education funding data available for this company.</p>
-                      </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
               </div>
 
