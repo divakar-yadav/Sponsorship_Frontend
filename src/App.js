@@ -49,7 +49,7 @@ function App() {
       {!isAuthPage && user && (
         <header className="top-navbar">
           <h2 className="app-title">
-            <span className="app-title-icon">SP</span>
+            <span className="app-title-icon">NMDSI</span>
             Sponsorship Predictor
           </h2>
 
@@ -112,7 +112,7 @@ function App() {
 
 export default function WrappedApp() {
   return (
-    <Router>
+    <Router basename="/recommendation">
       <App />
     </Router>
   );

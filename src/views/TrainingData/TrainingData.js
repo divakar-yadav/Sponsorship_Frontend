@@ -162,18 +162,17 @@ useEffect(() => {
     }
   };
 
-  const handleDownload = async (datasetId) => {
-    try {
-      const res = await fetch(`${BASE_URL}/api/download-dataset/${datasetId}`);
-      const data = await res.json();
-
-      if (res.ok && data.url) {
-        window.open(data.url, '_blank');
-      } else {
-        toast.error('❌ Failed to fetch download link');
+  const handleDownload = (downloadUrl) => {
+    if (downloadUrl) {
+      // Convert HTTP to HTTPS if needed (for mixed content issues)
+      let url = downloadUrl;
+      if (url.startsWith('http://')) {
+        url = url.replace('http://', 'https://');
       }
-    } catch (err) {
-      toast.error(`❌ Error: ${err.message}`);
+      // Open download URL in new window/tab
+      window.open(url, '_blank');
+    } else {
+      toast.error('❌ Download URL not available');
     }
   };
 
@@ -249,7 +248,7 @@ return (
               <td>{ds.num_rows || '—'}</td>
               <td>{new Date(ds.uploaded_at).toLocaleString()}</td>
               <td>{ds.done_by || '—'}</td>
-              <td><button onClick={() => handleDownload(ds.dataset_id)}>⬇️ Download</button></td>
+              <td><button onClick={() => handleDownload(ds.download_url)} disabled={!ds.download_url}>⬇️ Download</button></td>
             </tr>
           ))}
         </tbody>

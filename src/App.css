@@ -36,16 +36,9 @@ h2.app-title {
 }
 
 .app-title-icon {
-  width: 28px;
-  height: 28px;
-  background-color: #4a90e2;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-weight: bold;
-  font-size: 1rem;
-  color: #ffffff;
+  font-size: 1.1rem;
+  color: #4a90e2;
 }
 
 .auth-section {

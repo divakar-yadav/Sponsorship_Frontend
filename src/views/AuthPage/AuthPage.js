@@ -8,39 +8,30 @@ import './AuthPage.css';
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const AuthPage = ({ setUser }) => {
-  const [authMode, setAuthMode] = useState('login');
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleAuth = async () => {
-    const endpoint = authMode === 'signup' ? '/api/signup' : '/api/login';
     try {
-      const res = await fetch(`${BASE_URL}${endpoint}`, {
+      const res = await fetch(`${BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
-          password,
-          name: authMode === 'signup' ? name : undefined
+          password
         })
       });
 
       const data = await res.json();
       if (res.ok) {
-        if (authMode === 'login') {
-          setUser({ name: data.user.name, email: data.user.email });
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify({ name: data.user.name, email: data.user.email }));
-          toast.success('Login successful!');
-          navigate(location.state?.from?.pathname || '/');
-        } else {
-          toast.success('Signup successful. Please log in.');
-          setAuthMode('login');
-        }
+        setUser({ name: data.user.name, email: data.user.email });
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify({ name: data.user.name, email: data.user.email }));
+        toast.success('Login successful!');
+        navigate(location.state?.from?.pathname || '/');
       } else {
         toast.error(data.error || 'Authentication failed.');
       }
@@ -53,17 +44,7 @@ const AuthPage = ({ setUser }) => {
     <div className="auth-page-container">
       <div className="auth-box">
         <FaUserCircle size={60} className="auth-icon" />
-        <h2>{authMode === 'signup' ? 'Sign up for SP' : 'Sign in to SP'}</h2>
-
-        {authMode === 'signup' && (
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="auth-input"
-          />
-        )}
+        <h2>Sign in to SP</h2>
 
         <input
           type="email"
@@ -87,14 +68,11 @@ const AuthPage = ({ setUser }) => {
         </div>
 
         <button className="auth-btn" onClick={handleAuth}>
-          {authMode === 'signup' ? 'Sign Up' : 'Log In'}
+          Log In
         </button>
 
-        <p className="auth-toggle-text">
-          {authMode === 'signup' ? 'Already have an account?' : 'New here?'}{' '}
-          <span onClick={() => setAuthMode(authMode === 'signup' ? 'login' : 'signup')}>
-            {authMode === 'signup' ? 'Login' : 'Sign up'}
-          </span>
+        <p className="auth-account-message">
+          To create an account, reach out to <strong>Tian Zhao</strong> at <a href="mailto:tzhao@uwm.edu">tzhao@uwm.edu</a>
         </p>
       </div>
 
